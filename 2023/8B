@@ -1,0 +1,76 @@
+#!/usr/bin/python
+from sys import argv
+
+def main():
+
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+
+    start = []
+    graph = {}
+    count, lines = preprocess(argv[1])
+    
+    instructions = lines[0].strip()
+    instructions = list(map(lambda c: 0 if (c == 'n') else 1, instructions))
+
+    for line in lines[2:]:
+        stripped = ""
+        for char in line.strip():
+            if char != ' ':
+                stripped += char
+        process_line(stripped, graph, start)
+
+    process_data(instructions, graph, start)
+
+def preprocess(file):
+    count = 0
+    lines = []
+    with open(argv[1]) as file:
+        for line in file:
+            count += 1
+            lines.append(line)
+    return count, lines
+
+def process_line(line, graph, start):
+    node, neighbors = line.split('=')
+    neighbors = neighbors[1:-1].split(',')
+    graph[node] = neighbors
+    if node[-1] == 'A':
+        start.append(node)
+
+directions = ['Left', 'Right']
+
+def process_data(instructions, graph, start):
+    n = len(instructions)
+    for node in start:
+        i = 0
+        path = {}
+        end_nodes = []
+        next = node
+        while True:
+            prev = next
+            path[(prev, i % n)] = i
+            turn = instructions[i % n]
+            next = graph[prev][turn]
+            i += 1
+            seen = path.get((next, i%n), None)
+            if seen:
+                break
+            elif next[-1] == 'Z':
+                end_nodes.append((next, i))
+#            else:
+#                print(next, end=', ')
+        print()
+
+        print(i, seen, end_nodes)
+        
+    print("It will take", i, "steps")
+
+        
+            
+        
+
+
+if __name__ == "__main__":
+    main()

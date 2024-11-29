@@ -1,0 +1,34 @@
+#!/usr/bin/python
+from sys import argv
+
+i = 0
+games = []
+state = "new"
+amount = 0
+
+for arg in argv[1:]:
+    arg = arg.lower()
+    short = arg[:-1]
+    if arg == "game":
+        games.append({'r':0, 'g':0, 'b':0})
+    elif arg[-1] == ':':
+        pass
+    elif arg == "red" or short == "red":
+        games[-1]['r'] = max(amount, games[-1]['r'])
+    elif arg == "green" or short == "green":
+        games[-1]['g'] = max(amount, games[-1]['g'])
+    elif arg == "blue" or short == "blue":
+        games[-1]['b'] = max(amount, games[-1]['b'])
+    else:
+        amount = int(arg)
+
+id_sum = 0
+contained = {'r':12, 'g':13, 'b':14}
+for i in range(len(games)):
+    id = i+1
+    mark = '   '
+    if games[i]['r'] <= contained['r'] and games[i]['g'] <= contained['g'] and games[i]['b'] <= contained['b']:
+        id_sum += id
+        mark = '[*]'
+    print(mark,"Game", id,":", games[i]['r'],"red,", games[i]['g'], "green,", games[i]['b'], "blue")
+print(id_sum)

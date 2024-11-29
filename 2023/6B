@@ -1,0 +1,47 @@
+#!/usr/bin/python
+from math import sqrt, floor, ceil
+from sys import argv
+
+def main():
+
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+
+    data = []
+    lines = preprocess(argv[1])
+
+    with open(argv[1]) as file:
+        for line in file:
+            line = line[:-1].lower() # Strip new line and force lowercase
+            data.append(process_line(line))
+
+    process_data(data)
+
+def preprocess(file):
+    lines = 0
+    with open(argv[1]) as file:
+        for line in file:
+            lines += 1
+    return lines
+
+def process_line(line):
+    data = line.split()[1:]
+    return [int(''.join(data))]
+
+def process_data(data):
+    prod = 1
+    ways = []
+    time, dist = data
+    for i in range(len(time)):
+        b = time[i]
+        c = dist[i]
+        z = sqrt(b*b - 4*c)
+        x1 = ceil ((b - z) / 2 + 0.000001)
+        x2 = floor((b + z) / 2 - 0.000001)
+        ways.append(x2 - x1 + 1)
+        prod *= ways[-1]
+    print(prod)
+
+if __name__ == "__main__":
+    main()

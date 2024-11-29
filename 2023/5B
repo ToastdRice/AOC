@@ -1,0 +1,89 @@
+#!/usr/bin/python
+from sys import argv
+
+def main():
+
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+
+    seed_info = []
+    mapping = []
+    lines, blocks = preprocess(argv[1])
+
+    seed_info = list(map(int, blocks[0][0][7:].split()))
+    while seed_info:
+        mapping.append((seed_info[0], seed_info[1]))
+        seed_info = seed_info[2:]
+
+    for block in blocks[1:]:
+        mapping = process_block(mapping, block)
+
+    process_data(mapping)
+
+def preprocess(file):
+    lines = 0
+    blocks = [[]]
+    with open(argv[1]) as file:
+        for line in file:
+            lines += 1
+            line = line.strip().lower()
+            if line: blocks[-1].append(line)
+            else: blocks.append([])
+    if blocks and not blocks[-1]:
+        blocks = blocks[:-1]
+    return lines, blocks
+
+def process_block(mapping, block, debug=False):
+    # Extract label
+    label = block.pop(0).split()[0]
+    print("Mapping", label)
+    #=======================================
+    # Apply transformation indicated by map
+    if debug: print("\tinput: ", mapping)
+    output = []
+    for line in block:
+        cases = []
+        remaining = []
+        ranges = len(mapping)
+        params = map(int, line.split())
+        dst, src, rng = params
+        for source, length in mapping:
+            offset = source - src
+            extend = offset + length
+            # Case 1 - ranges do not overlap
+            if offset > rng or extend < 0:
+                cases.append( 1 )
+                remaining.append((source,length))
+                continue
+            # Case 2 - range is completely mapped
+            elif offset >= 0 and extend <= rng:
+                cases.append( 2 )
+                output.append((dst + offset, length))
+            # Case 3 - start of range is mapped
+            elif offset >= 0 and offset < rng:
+                cases.append( 3 )
+                mapped   = rng    - offset
+                unmapped = length - mapped
+                output.append((dst + offset, mapped))
+                remaining.append((source + mapped, unmapped))
+            # Case 4 - end of range is mapped
+            else:
+                cases.append( 4 )
+                mapped   = extend
+                unmapped = length - mapped
+                output.append((dst, mapped))
+                remaining.append((source, unmapped))
+        mapping = remaining
+        if debug: print('\t', cases, ':',(dst, src, rng),'\t-->', output, mapping)
+    output.extend(mapping)
+    #=======================================
+    if debug: print("\toutput:",output)
+    return output
+
+def process_data(data):
+    minimums = map(lambda x: x[0], data)
+    print(min(minimums))
+
+if __name__ == "__main__":
+    main()

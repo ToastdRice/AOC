@@ -1,0 +1,61 @@
+#!/usr/bin/python
+from sys import argv
+from functools import reduce
+
+schematic = []
+symbol = []
+gears = []
+parts = {}
+line = 0
+
+for arg in argv[1:]:
+    schematic.append(arg)
+    symbol.append([])
+    gears.append([])
+    for char in range(len(arg)):
+        if arg[char] == '*':
+            parts[(line, char)] = []
+            gears[-1].append(True)
+        else:
+            gears[-1].append(False)
+    line += 1
+            
+
+def which_gear(x1, x2, y1, y2, gears):
+    for y in range(y1, y2+1):
+        for x in range(x1, x2+1):
+            if gears[y][x]:
+                return (y,x)
+    return None
+
+width = len(schematic[0])
+height = len(schematic)
+total = 0
+for y in range(height):
+    part = 0
+    start = -1
+    for x in range(width):
+        item = schematic[y][x]
+        if item.isdigit():
+            part *= 10
+            part += ord(item) - 0x30
+            if start < 0:
+                start = max(0, x-1)
+        else:
+            if start >= 0:
+                gear = which_gear(start, x, max(0, y-1), min(height-1, y+1), gears)
+                if gear:
+                    parts[gear].append(part)
+            start = -1
+            part = 0
+    if start >= 0:
+        gear = which_gear(start, width-1, max(0, y-1), min(height-1, y+1), gears)
+        if gear:
+            parts[gear].append(part)
+
+for gear in parts.values():
+    if len(gear) == 2:
+        ratio = reduce(lambda x, y: x * y, gear)
+        print(gear, '->', ratio)
+        total += ratio
+print(total)

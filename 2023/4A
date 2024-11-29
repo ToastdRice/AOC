@@ -1,0 +1,40 @@
+#!/usr/bin/python
+from sys import argv
+
+def main():
+
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+
+    data = []
+
+    with open(argv[1]) as file:
+        for line in file:
+            line = line[:-1].lower() # Strip new line and force lowercase
+            data.append(process_line(line))
+    
+    results = process_data(data)
+
+    print("Total points:", sum(results))
+
+def process_line(line):
+    i = 0
+    while line[i] != ':': i += 1
+    i += 2
+    j =  2 + i
+    while line[j] != '|': j += 1
+    winning = [int(n) for n in line[i:j ].split()]
+    numbers = [int(n) for n in line[j+2:].split()]
+    return list(filter(lambda n: n in winning, numbers))
+
+def process_data(data):
+    results = []
+    for card in range(len(data)):
+        matching = len(data[card])
+        results.append((1 << matching >> 1))
+        print("Card", str(card+1) + ":", "pts =", results[-1], "|", data[card])
+    return results
+
+if __name__ == "__main__":
+    main()

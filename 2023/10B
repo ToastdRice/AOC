@@ -1,0 +1,155 @@
+#!/usr/bin/python
+from sys import argv
+
+def main():
+
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+
+    data = []
+    dim, lines, start = preprocess(argv[1])
+
+    process_data(dim, lines, start)
+
+    for line in lines:
+        data.append(process_line(line))
+    
+    print("There are",sum(data),"enclosed spaces")
+
+convert = {
+    'F':'p',
+    'J':'d',
+    'L':'b',
+    '7':'q',
+    '.':'.',
+    '-':'-',
+    '|':'|',
+}
+
+PIPE = { 'p':'┌', 'd':'┘', 'b':'└', 'q':'┐', '-':'─', '|':'│'}
+CORNERS = ['┌',]
+
+def preprocess(file):
+    height = 0
+    lines = []
+    start = None
+    with open(argv[1]) as file:
+        content = file.read().split('\n')
+    width = len(content[0])
+    column = range(width)
+    for line in content:
+        line = list(line.strip())
+        if line:
+            for x in column:
+                if line[x] == 'S':
+                    start = (height, x)
+                else: line[x] = convert[line[x]]
+            lines.append(line)
+            height += 1
+    return (height, width), lines, start
+
+def process_line(line):
+    out = ""
+    inside = 0
+    corner = ''
+    count = 0
+    for char in line:
+        if char in PIPE.values():
+            out += char
+            if char in [PIPE['p'],PIPE['b']]:
+                corner = char
+            elif (char == PIPE['|']) or \
+                 (char == PIPE['d'] and corner == PIPE['p']) or \
+                 (char == PIPE['q'] and corner == PIPE['b']):
+                inside = 1 - inside
+        else:
+            out += '▓' if inside else '░'
+            count += inside
+    print(out)
+    return count
+
+tile = {
+    'N': { 'p':{'x':1,'y':0,'d':'E'}, 'q':{'x':-1,'y': 0,'d':'W'}, '|':{'x': 0,'y':-1,'d':'N'} },
+    'S': { 'b':{'x':1,'y':0,'d':'E'}, 'd':{'x':-1,'y': 0,'d':'W'}, '|':{'x': 0,'y': 1,'d':'S'} },
+    'E': { 'q':{'x':0,'y':1,'d':'S'}, 'd':{'x': 0,'y':-1,'d':'N'}, '-':{'x': 1,'y': 0,'d':'E'} },
+    'W': { 'p':{'x':0,'y':1,'d':'S'}, 'b':{'x': 0,'y':-1,'d':'N'}, '-':{'x':-1,'y': 0,'d':'W'} },
+}
+
+dir_to_pipe = {
+    'WE': PIPE['-'],
+    'WN': PIPE['b'],
+    'WS': PIPE['p'],
+    'EN': PIPE['d'],
+    'ES': PIPE['q'],
+    'NS': PIPE['|'],
+}
+
+def process_data(dim, chart, start):
+    h = dim[0]
+    w = dim[1]
+    y = [start[0], 0, 0]
+    x = [start[1], 0, 0]
+    pipe = ['', '', '']
+    d  = ['', '', '']
+    next = 1
+    feature = chart[y[0]][x[0]-1]
+    if x[0] > 0 and feature in tile['W'].keys():
+        pipe[next] = feature
+        x[next] = x[0]-1
+        y[next] = y[0]
+        d[next] = 'W'
+        d[0] += 'W'
+        chart[y[next]][x[next]] = PIPE[pipe[next]]
+        next += 1
+    feature = chart[y[0]][x[0]+1]
+    if x[0] < w and feature in tile['E'].keys():
+        pipe[next] = feature
+        x[next] = x[0]+1
+        y[next] = y[0]
+        d[next] = 'E'
+        d[0] += 'E'
+        chart[y[next]][x[next]] = PIPE[pipe[next]]
+        next += 1
+    feature = chart[y[0]-1][x[0]]
+    if y[0] > 0 and feature in tile['N'].keys():
+        pipe[next] = feature
+        x[next] = x[0]
+        y[next] = y[0]-1
+        d[next] = 'N'
+        d[0] += 'N'
+        chart[y[next]][x[next]] = PIPE[pipe[next]]
+        next += 1
+    feature = chart[y[0]+1][x[0]]
+    if y[0] < h and feature in tile['S'].keys():
+        pipe[next] = feature
+        x[next] = x[0]
+        y[next] = y[0]+1
+        d[next] = 'S'
+        d[0] += 'S'
+        chart[y[next]][x[next]] = PIPE[pipe[next]]
+        next += 1
+    chart[y[0]][x[0]] = dir_to_pipe[d[0]]
+    step = 1
+    try:
+        while x[1] != x[2] or y[1] != y[2]:
+            step += 1
+            for i in (1,2):
+                x[i] += tile[d[i]][pipe[i]]['x']
+                y[i] += tile[d[i]][pipe[i]]['y']
+                d[i]  = tile[d[i]][pipe[i]]['d']
+                pipe[i] = chart[y[i]][x[i]]
+            chart[y[1]][x[1]] = PIPE[pipe[1]]
+            chart[y[2]][x[2]] = PIPE[pipe[2]]
+        print("It will take",step, "steps!")
+    except Exception as e:
+        print('[!]',repr(e))
+        print('[!] x=',x,'  y=',y,'  d=',d,'  p=',pipe,sep='')
+        for line in chart:
+            print("\t", ''.join(line))
+        exit()
+        
+
+
+if __name__ == "__main__":
+    main()

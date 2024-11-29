@@ -1,0 +1,39 @@
+#!/usr/bin/python
+from sys import argv
+
+values = []
+digits = ['zero','one','two','three','four','five','six','seven','eight','nine']
+
+for arg in argv[1:]:
+    arg = arg.lower() + " "
+    first = last = None
+    x = 0
+    xfirst = xlast = None
+    for char in arg:
+        
+        digit = ord(char) - 0x30
+        if digit >= 0 and digit <= 9:
+            last   = digit
+            xlast  = x
+            xfirst = xfirst if first else x
+            first  = first  if first else last
+        x = x + 1
+
+    position = {}
+    for i in range(10):
+        try:
+            position[arg.index(digits[i])] = i
+            position[len(arg) - arg[::-1].index(digits[i][::-1])] = i
+        except:
+            pass
+            
+    if xfirst == None or (position.keys() and xfirst > min(position.keys())):
+        first = position[min(position.keys())]
+    if xlast == None  or (position.keys() and xlast  < max(position.keys())):
+        last  = position[max(position.keys())]
+
+    if first:
+        values.append((first * 10) + last)
+
+    print(first, last, arg)
+print(sum(values))

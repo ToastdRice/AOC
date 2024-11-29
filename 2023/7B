@@ -1,0 +1,110 @@
+#!/usr/bin/python
+from sys import argv
+from functools import cmp_to_key
+def main():
+
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+
+    data = []
+    lines = preprocess(argv[1])
+
+    with open(argv[1]) as file:
+        for line in file:
+            line = line[:-1].upper() # Strip new line and force uppercase
+            data.append(process_line(line))
+
+    process_data(data)
+
+def preprocess(file):
+    lines = 0
+    with open(argv[1]) as file:
+        for line in file:
+            lines += 1
+    return lines
+
+hand_type = {
+    '[5]'    : 6, # Five of a kind
+    '[4]'    : 5, # Four of a kind
+    '[3, 2]' : 4, # Full house
+    '[3]'    : 3, # Three of a kind
+    '[2, 2]' : 2, # Two pair
+    '[2]'    : 1, # One pair
+    '[]'     : 0, # High card
+}
+
+hand_str = [
+    "High card",
+    "One pair",
+    "Two pair",
+    "3 of a kind",
+    "Full house",
+    "4 of a kind",
+    "5 of a kind",
+]
+
+strength = {
+    'A': 14,
+    'K': 13,
+    'Q': 12,
+    'T': 10,
+    '9': 9,
+    '8': 8,
+    '7': 7,
+    '6': 6,
+    '5': 5,
+    '4': 4,
+    '3': 3,
+    '2': 2,
+    'J': 1,
+}
+
+def process_line(line):
+    cards, bid = line.split()
+    catalogue = {}
+    for card in cards:
+        catalogue[card] = catalogue.get(card, 0) + 1
+    matching = sorted(list(filter(lambda x: x>1, catalogue.values())), reverse=True)
+    saved = matching
+    jokers = catalogue.get('J', None)
+    if jokers:
+        if not matching:
+            matching = [2]
+        elif jokers >= 4:
+            matching = [5]
+        elif jokers >= 2:
+            if len(matching) == 2:
+                matching = [matching[0] + 2]
+            else:
+                matching = [jokers + 1]
+        else:
+            if len(matching) == 2:
+                matching = [3, 2]
+            else:
+                matching[0] += jokers
+    hand = hand_type[str(matching)]
+    return (hand, cards, int(bid), matching, saved)
+
+def process_data(data):
+    def ordering2(hand1, hand2):
+        for i in range(5):
+            card1 = hand1[1][i]
+            card2 = hand2[1][i]
+            diff = strength[card1] - strength[card2]
+            if diff:
+                return diff
+        return 0
+    by_card = sorted(data,    key=cmp_to_key(ordering2))
+    by_type = sorted(by_card, key=lambda hand: hand[0])
+    hand_count = len(data)
+    sum = 0
+    for i in range(hand_count):
+        rank = i + 1
+        hand = by_type[i]
+        sum += hand[2] * rank
+        print(rank,'\t:',hand[1],':',hand_str[hand[0]]) 
+    print(sum)
+
+if __name__ == "__main__":
+    main()

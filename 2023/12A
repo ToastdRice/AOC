@@ -1,0 +1,49 @@
+#!/usr/bin/python
+from sys import argv
+
+def main():
+
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+
+    dim, lines = preprocess(argv[1])
+    data = process_lines(dim, lines)
+    process_data(data)
+
+def preprocess(file):
+    lines = []
+    height = 0
+    with open(file) as file:
+        content = file.read().split('\n')
+    for line in content:
+        line = line.strip()
+        if line:
+            lines.append(line)
+            height += 1
+    width = len(lines[0])
+    return (height, width), lines
+
+def process_lines(dim, lines):
+    data = []
+    for line in lines:
+        springs, groups = line.split()
+        springs = springs.strip('.')
+        groups  = groups.split(',')
+        chart = ""
+        key = 0
+        for char in springs:
+            if char != '.' or chart[-1] != '.':
+                chart += char
+                key  <<= 1
+                if char != '.':
+                    key += 1
+        data.append((key,chart,groups))
+    return data
+            
+def process_data(data):
+    for key, chart, groups in data:
+        print(key)
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,75 @@
+#!/usr/bin/python
+from sys import argv
+
+def main():
+
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+
+    seeds = []
+    maps = []
+    labels = []
+    lines, blocks = preprocess(argv[1])
+
+    seeds = list(map(int, blocks[0][0][7:].split()))
+
+    for block in blocks[1:]:
+        if block:
+            chart, label = process_block(block)
+            maps.append(chart)
+            labels.append(label)
+
+    process_data(seeds, maps, labels)
+
+def preprocess(file):
+    lines = 0
+    blocks = [[]]
+    with open(argv[1]) as file:
+        for line in file:
+            lines += 1
+            line = line.strip().lower()
+            if line: blocks[-1].append(line)
+            else: blocks.append([])
+    return lines, blocks
+
+def process_block(block):
+    # Extract label
+    x = 0
+    label = block[0].split()[0]
+    for i in range(2):
+        while label[x] != '-':
+            x+=1
+        x+=1
+    #============================
+    # Create map
+    params = []
+    for line in block[1:]:
+        params.append(list(map(int, line.split())))
+    #============================
+    return params, label[x:]
+
+def process_data(seeds, maps, labels):
+    results = []
+    categories = len(labels)
+    for i in range(len(seeds)):
+        value = seeds[i]
+        print("Seed", value, end='')
+        for j in range(categories):
+            value = map_property(maps[j], value)
+            print(',', labels[j], value, end='')
+        print('.')
+        results.append(value)
+    print(min(results))
+
+def map_property(chart, value):
+    for params in chart:
+        dst, src, rng = params
+        offset = value - src
+        #print('\n', " value=", value, " dst=", dst, " src=", src, " rng=", rng, " offset=", offset, sep='')
+        if offset >= 0 and offset < rng:
+            return dst + offset
+    return value
+
+if __name__ == "__main__":
+    main()

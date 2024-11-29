@@ -1,0 +1,67 @@
+#!/usr/bin/python
+from sys import argv
+
+def main():
+
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+
+    start = []
+    graph = {}
+    count, lines = preprocess(argv[1])
+    
+    instructions = lines[0].strip()
+    instructions = list(map(lambda c: 0 if (c == 'L') else 1, instructions))
+
+    for line in lines[2:]:
+        stripped = ""
+        for char in line.strip():
+            if char != ' ':
+                stripped += char
+        process_line(stripped, graph, start)
+
+    process_data(instructions, graph, start)
+
+def preprocess(file):
+    count = 0
+    lines = []
+    with open(argv[1]) as file:
+        for line in file:
+            count += 1
+            lines.append(line)
+    return count, lines
+
+def process_line(line, graph, start):
+    node, neighbors = line.split('=')
+    neighbors = neighbors[1:-1].split(',')
+    graph[node] = neighbors
+    if node[-1] == 'A':
+        start.append(node)
+
+directions = ['Left', 'Right']
+
+def process_data(instructions, graph, start):
+    n = len(instructions)
+    cycles = []
+    lcm = 1
+    for node in start:
+        i = 0
+        next = node
+        while next[-1] != 'Z':
+            turn = instructions[i % n]
+            next = graph[next][turn]
+            i += 1
+        cycles.append(i)
+        lcm *= i
+    print(lcm, cycles)
+        
+    print("It will take", lcm, "steps")
+
+        
+            
+        
+
+
+if __name__ == "__main__":
+    main()

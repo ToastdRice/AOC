@@ -1,0 +1,17 @@
+#!/usr/bin/python
+from sys import argv
+
+values = []
+
+for arg in argv[1:]:
+    print(arg)
+    first = last = None
+    for char in arg:
+        digit = ord(char) - 0x30
+        if digit >= 0 and digit <= 9:
+            last  = digit
+            first = first if first else last
+    if first:
+        values.append((first * 10) + last)
+print(values)
+print(sum(values))

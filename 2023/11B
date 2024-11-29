@@ -1,0 +1,68 @@
+#!/usr/bin/python
+from sys import argv
+
+def main():
+
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+
+    dim, lines = preprocess(argv[1])
+
+    data = expand_universe(dim, lines)
+
+    process_data(data)
+
+def preprocess(file):
+    lines = []
+    width = height = 0
+    with open(file) as file:
+        content = file.read().split('\n')
+    for line in content:
+        line = line.strip()
+        if line:
+            lines.append(line)
+            height += 1
+    width = len(lines[0])
+    return (height, width), lines
+
+EXPANSION_CONSTANT = 1000000
+
+def expand_universe(dim, chart):
+    rows = [False] * dim[0]
+    cols = [False] * dim[1]
+    found = []
+    galaxies = []
+    for y in range(dim[0]):
+        for x in range(dim[1]):
+            if chart[y][x] == '#':
+                rows[y] = True
+                cols[x] = True
+                found.append([y,x])
+    new_y = [0]
+    new_x = [0]
+    for flag in rows[1:]:
+        expand = 1 if flag else EXPANSION_CONSTANT
+        new_y.append(new_y[-1] + expand)
+    for flag in cols[1:]:
+        expand = 1 if flag else EXPANSION_CONSTANT
+        new_x.append(new_x[-1] + expand)
+    for galaxy in found:
+        coordinates = (new_y[galaxy[0]], new_x[galaxy[1]])
+        galaxies.append(coordinates)
+        # print(galaxy, '-->', coordinates)
+    return galaxies
+            
+def process_data(data):
+    total = 0
+    count = len(data)
+    for i in range(count):
+        for j in range(i+1, count):
+            dy = abs(data[i][0] - data[j][0])
+            dx = abs(data[i][1] - data[j][1])
+            distance = dy + dx
+            total += distance
+            # print('(',i+1,',',j+1,'): ', distance, sep='')
+    print(total)
+if __name__ == "__main__":
+    main()

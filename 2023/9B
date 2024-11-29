@@ -1,0 +1,53 @@
+#!/usr/bin/python
+from sys import argv
+
+def main():
+
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+
+    data = []
+    count, lines = preprocess(argv[1])
+
+    for line in lines:
+        data.append(process_line(line))
+
+    process_data(data)
+
+def preprocess(file):
+    count = 0
+    lines = []
+    with open(argv[1]) as file:
+        for line in file:
+            count += 1
+            lines.append(line)
+    return count, lines
+
+def process_line(line):
+    data = line.split()
+    data = [list(map(int, data))]
+    repeat = 1
+    while repeat:
+        repeat = 0
+        sequence = []
+        prev     = data[-1][0]
+        for num in data[-1][1:]:
+            diff = num - prev
+            prev = num
+            sequence.append(diff)
+            repeat |= diff
+        data.append(sequence)
+    return data[:-1]
+
+def process_data(data):
+    total = 0
+    for sequences in data:
+        x = 0
+        for diffs in sequences[::-1]:
+            x = diffs[0] - x
+        total += x
+    print(total)
+
+if __name__ == "__main__":
+    main()

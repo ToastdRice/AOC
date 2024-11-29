@@ -1,0 +1,55 @@
+#!/usr/bin/python
+from sys import argv
+
+def main():
+
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+
+    graph = {}
+    count, lines = preprocess(argv[1])
+    
+    instructions = lines[0].strip()
+    instructions = list(map(lambda c: 0 if (c == 'L') else 1, instructions))
+
+    for line in lines[2:]:
+        stripped = ""
+        for char in line.strip():
+            if char != ' ':
+                stripped += char
+        process_line(stripped, graph)
+
+    process_data(instructions, graph)
+
+def preprocess(file):
+    count = 0
+    lines = []
+    with open(argv[1]) as file:
+        for line in file:
+            count += 1
+            lines.append(line)
+    return count, lines
+
+def process_line(line, graph):
+    node, neighbors = line.split('=')
+    neighbors = neighbors[1:-1].split(',')
+    graph[node] = neighbors
+
+directions = ['L', 'R']
+
+def process_data(instructions, graph):
+    i = 0
+    l = len(instructions)
+    next = 'AAA'
+    while next != 'ZZZ':
+        prev = next
+        turn = instructions[i % l]
+        next = graph[next][turn]
+        i += 1
+        print(i,':\t',prev,'[',directions[turn],'] =', next)
+        
+
+
+if __name__ == "__main__":
+    main()

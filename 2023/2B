@@ -1,0 +1,31 @@
+#!/usr/bin/python
+from sys import argv
+
+i = 0
+games = []
+state = "new"
+amount = 0
+
+for arg in argv[1:]:
+    arg = arg.lower()
+    short = arg[:-1]
+    if arg == "game":
+        games.append({'r':0, 'g':0, 'b':0})
+    elif arg[-1] == ':':
+        pass
+    elif arg == "red" or short == "red":
+        games[-1]['r'] = max(amount, games[-1]['r'])
+    elif arg == "green" or short == "green":
+        games[-1]['g'] = max(amount, games[-1]['g'])
+    elif arg == "blue" or short == "blue":
+        games[-1]['b'] = max(amount, games[-1]['b'])
+    else:
+        amount = int(arg)
+
+total = 0
+for i in range(len(games)):
+    id = i+1
+    power = games[i]['r'] * games[i]['g'] * games[i]['b']
+    print("Game", id,":", games[i]['r'],"red,", games[i]['g'], "green,", games[i]['b'], "blue;", power, "power")
+    total += power
+print(total)
