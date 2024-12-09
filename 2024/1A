@@ -1,0 +1,52 @@
+#!/usr/bin/python
+from sys import argv
+
+def main():
+
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+
+    dim, lines = preprocess(argv[1])
+    data = process_lines(dim, lines)
+    result = process_data(data)
+    print(result)
+
+def preprocess(file):
+    lines = []
+    height = 0
+    with open(file) as file:
+        content = file.read().split('\n')
+    for line in content:
+        line = line.strip()
+        if line:
+            lines.append(line)
+            height += 1
+    width = len(lines[0])
+    return (height, width), lines
+
+def process_lines(dim, lines):
+    data  = []
+    left  = []
+    right = []
+    for line in lines:
+        l,r = line.split()
+        l = int(l)
+        r = int(r)
+        left.append(l)
+        right.append(r)
+    left.sort()
+    right.sort()
+    for i in range(dim[0]):
+        data.append(left[i],right[i])
+    return data
+            
+def process_data(data):
+    distance = []
+    for l,r in data:
+        d = abs(l - r)
+        distance.append(d)
+    return sum(distance)
+
+if __name__ == "__main__":
+    main()
