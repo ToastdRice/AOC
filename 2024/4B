@@ -1,0 +1,45 @@
+#!/usr/bin/python
+from sys import argv
+
+def main():
+
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+
+    dim, lines = preprocess(argv[1])
+    result = process_data(dim, lines)
+    print(result)
+
+def preprocess(file):
+    lines = []
+    height = 0
+    with open(file) as file:
+        content = file.read().split('\n')
+    for line in content:
+        if line.strip():
+            lines.append(line)
+            height += 1
+    width = len(lines[0])
+    return (height, width), lines
+
+def process_data(dim, lines):
+    count = 0
+    for y in range(dim[0]):
+        for x in range(dim[1]):
+            if lines[y][x] == "A":
+                if search(lines, y, x, *dim):
+                    count += 1
+    return count
+
+def search(grid, y, x, h, w):
+    if x<1 or y<1 or x+1>=w or y+1>=h:
+        return 0
+    a = grid[y-1][x-1] + grid[y+1][x+1]
+    b = grid[y+1][x-1] + grid[y-1][x+1]
+    find = ["MS","SM"]
+    return (a in find) and (b in find)
+
+
+if __name__ == "__main__":
+    main()

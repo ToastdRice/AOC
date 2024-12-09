@@ -1,0 +1,73 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from sys import argv
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+
+    content = preprocess(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+def preprocess(filename):
+    """Extract lines from file"""
+    target = []
+    content = [target]
+    with open(filename,encoding="utf8") as file:
+        lines = file.read().split('\n')
+    for line in lines:
+        if not line:
+            target = []
+            content.append(target)
+            continue
+        target.append(line)
+    return content
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    rules = {}
+    updates = []
+    for rule in content[0]:
+        requirement, page = rule.split("|")
+        rules[page] = rules.get(page,[]) + [requirement]
+    for update in content[1]:
+        updates.append(update.split(','))
+    return (rules,updates)
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    middle = []
+    rules, updates = data
+    #print("[*] Rules:")
+    #for page in rules:
+        #print(f"      Page {page} cannot precede these pages: {rules[page]}")
+    for i in range(len(updates)):
+        update = updates[i]
+        seen = []
+        valid = True
+        for page in update[::-1]:
+            for must_preceed in rules.get(page,[]):
+                if must_preceed in seen:
+                    #print(f"[!] Update {update} is invalid!\n      Page {must_preceed} must preceed {page}")
+                    valid = False
+                    break
+            if not valid:
+                break
+            seen.append(page)
+        if valid:
+            n = len(update) // 2
+            middle.append(int(update[n]))
+    return sum(middle)
+
+#===============================================================================
+if __name__ == "__main__":
+    main()
