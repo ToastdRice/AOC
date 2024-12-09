@@ -1,0 +1,77 @@
+#!/usr/bin/python
+from sys import argv
+
+def main():
+
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+
+    _input = preprocess(argv[1])
+    data = process_lines(_input)
+    result = process_data(data)
+    print(result)
+
+def preprocess(file):
+    with open(file) as file:
+        content = file.read().split('\n')
+    return "".join(content)
+
+def process_lines(_input):
+    data = []
+    state = 0
+    x,y = None, None
+    for c in _input:
+        if state == 0:
+            state =  1 if c == "m" else 0
+        elif state == 1:
+            state =  2 if c == "u" else 0
+        elif state == 2:
+            state =  3 if c == "l" else 0
+        elif state == 3:
+            state =  4 if c == "(" else 0
+        elif state == 4:
+            if c == ",":
+                if x == None:
+                    state = 0
+                    print(f"mul(,\t INVALID 4a")
+                else:
+                    state = 5
+            else:
+                try:
+                    i = int(c)
+                    x = i + (10*x if x else 0)
+                except:
+                    x = None
+                    state = 0
+                    print(f"mul({x}{c}\t INVALID 4b")
+        elif state == 5:
+            if c == ")":
+                if y:
+                    data.append((x,y))
+                else:
+                    print(f"mul({x},)\t INVALID 5a")
+                x = None
+                y = None
+                state = 0
+            else:
+                try:
+                    i = int(c)
+                    y = i + (10*y if y else 0)
+                except:
+                    x = y = None
+                    state = 0
+                    print(f"mul({x},{y}{c}\t INVALID 5b")
+
+    return data
+            
+def process_data(data):
+    sum = 0
+    for x,y in data:
+        prod = x*y
+        sum += prod
+        print(f"mul({x},{y}) = {prod}")
+    return sum
+
+if __name__ == "__main__":
+    main()

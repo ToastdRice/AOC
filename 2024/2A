@@ -1,0 +1,58 @@
+#!/usr/bin/python
+from sys import argv
+
+def main():
+
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+
+    dim, lines = preprocess(argv[1])
+    data = process_lines(dim, lines)
+    result = process_data(data)
+    print(result)
+
+def preprocess(file):
+    lines = []
+    height = 0
+    with open(file) as file:
+        content = file.read().split('\n')
+    for line in content:
+        if line.strip():
+            lines.append(line)
+            height += 1
+    width = len(lines[0])
+    return (height, width), lines
+
+def process_lines(dim, lines):
+    data = []
+    for line in lines:
+        levels = line.split()
+        levels = [int(lvl) for lvl in levels]
+        data.append(levels)
+    return data
+            
+def process_data(data):
+    safe_count = 0
+    for levels in data:
+        inc = False
+        dec = False
+        unsafe = False
+        for i in range(1,len(levels)):
+            diff = levels[i] - levels[i-1]
+            inc = inc or diff > 0
+            dec = dec or diff < 0
+            change = abs(diff)
+            if change < 1 or change > 3:
+                unsafe = True
+                break
+        if not unsafe and (inc ^ dec):
+            safe_count += 1
+            print("Safe   ",end=': ')
+        else: 
+            print("Unsafe ",end=': ')
+        print(levels)
+    return safe_count
+
+if __name__ == "__main__":
+    main()

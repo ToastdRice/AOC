@@ -1,0 +1,88 @@
+#!/usr/bin/python
+from sys import argv
+
+def main():
+
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+
+    dim, lines = preprocess(argv[1])
+    data = process_lines(dim, lines)
+    result = process_data(data)
+    print(result)
+
+def preprocess(file):
+    lines = []
+    height = 0
+    with open(file) as file:
+        content = file.read().split('\n')
+    for line in content:
+        if line.strip():
+            lines.append(line)
+            height += 1
+    width = len(lines[0])
+    return (height, width), lines
+
+def process_lines(dim, lines):
+    data = []
+    for line in lines:
+        levels = line.split()
+        levels = [int(lvl) for lvl in levels]
+        data.append(levels)
+    return data
+            
+def process_data(data):
+    safe_count = 0
+    for levels in data:
+        safe, reason = is_safe(levels)
+        if safe:
+            safe_count += 1
+            text = "\033[32m" + "Safe" + "\033[0m"
+        else: 
+            text = "\033[31m" + "Unsafe" + "\033[0m"
+        print(f"{str(levels):33}: {text} {reason}")
+    return safe_count
+
+ordinance = [ "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth", ]
+
+def is_safe(levels, dampened=False):
+    if len(levels) == 1:
+        return True, "One Element"
+    increasing = levels[0] < levels[1]
+
+    for i in range(1,len(levels)):
+        diff = levels[i] - levels[i-1]
+        change = abs(diff)
+        if change < 1 or change > 3 or (diff > 0) != increasing:
+            if dampened:
+                return False, i
+
+            safe, result = retry(levels, [i,i-1,i-2])
+            if safe:
+                return True, result
+            index = sorted(result)
+            level = "\033[33m" + ", ".join(str(levels[x]) for x in index) + "\033[0m"
+            index = ",".join([str(x+1) for x in index])
+
+            return False, f"because of levels {index}: {level}"
+
+    return True, "without removing any level"
+
+def retry(levels, remove):
+    problems = set()
+    for i in remove:
+        check = levels[:i] + levels[i+1:]
+        if i >= 0:
+            safe, problem = is_safe(check, True)
+        else:
+            continue
+        if safe:
+            level = "\033[33m" + str(levels[i]) + "\033[0m"
+            return True, f"by removing {ordinance[i]} level, {level}"
+        problems.update([i, problem+1])
+    return False, problems
+
+
+if __name__ == "__main__":
+    main()

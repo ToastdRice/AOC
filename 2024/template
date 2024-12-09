@@ -9,7 +9,8 @@ def main():
 
     dim, lines = preprocess(argv[1])
     data = process_lines(dim, lines)
-    process_data(data)
+    result = process_data(data)
+    print(result)
 
 def preprocess(file):
     lines = []
@@ -17,8 +18,7 @@ def preprocess(file):
     with open(file) as file:
         content = file.read().split('\n')
     for line in content:
-        line = line.strip()
-        if line:
+        if line.strip():
             lines.append(line)
             height += 1
     width = len(lines[0])
@@ -29,7 +29,7 @@ def process_lines(dim, lines):
     return lines
             
 def process_data(data):
-    print(data)
+    return data
 
 if __name__ == "__main__":
     main()
