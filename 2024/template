@@ -3,42 +3,38 @@
 
 from sys import argv
 
+#===============================================================================
 def main():
     """Runs if script is being run as executable"""
     if len(argv) != 2:
         print("Invalid # of arguments")
         return
-
-    content, dims = preprocess(argv[1])
-    data = process_lines(content, dims)
+    content = preprocess(argv[1])
+    data = process_lines(content)
     result = process_data(data)
     print(result)
 
+#===============================================================================
 def preprocess(filename):
     """Extract lines from file"""
-    target = []
-    content = [target]
-    dimensions = []
+    content = []
     with open(filename,encoding="utf8") as file:
         lines = file.read().split('\n')
     for line in lines:
-        if not line:
-            if target:
-                target = []
-                content.append(target)
-                dimensions.append((len(target), len(target[0])))
-            continue
-        target.append(line)
-    dimensions.append((len(target), len(target[0])))
-    return content, dimensions
+        if line:
+            content.append(line)
+    return content
 
-def process_lines(content, dims):
+#===============================================================================
+def process_lines(content):
     """Parse lines into useable data"""
     return content
 
+#===============================================================================
 def process_data(data):
     """Process data as needed"""
     return data
 
+#===============================================================================
 if __name__ == "__main__":
     main()

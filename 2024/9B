@@ -1,0 +1,102 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from sys import argv
+from math import prod
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+    content = preprocess(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+def preprocess(filename):
+    """Extract lines from file"""
+    with open(filename,encoding="utf8") as file:
+        return file.read()[:-1]
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    n = len(content)
+    blocks = [[] for i in range(n)] 
+    freelist = []
+    for i in range(n):
+        size = int(content[i])
+        if i & 1:
+            freelist.append(size)
+        else:
+            blocks[i].append([(i>>1),size])
+    return (blocks, freelist)
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    data, freelist = data
+    index = list(range(len(freelist)))
+    n = 0
+    if not data[-1]:
+        data.pop()
+    #print_mmap(data,freelist)
+    for j in range(len(data)-1,0,-2):
+        if (n << 1) >= j:
+            break
+        file_id = data[j][0][0]
+        file_sz = data[j][0][1]
+        for k in index[n:]:
+            i = (k << 1) | 1
+            if i > j:
+                break
+            if freelist[k] >= file_sz:
+                data[i].append([file_id,file_sz])
+                data[j][0][0] = None
+                freelist[k] -= file_sz
+                #print_mmap(data,freelist)
+                if n == k and not freelist[k]:
+                    n += 1
+                break
+    return checksum(data,freelist)
+
+#===============================================================================
+def checksum(data,freelist):
+    _pos = 0
+    _sum = 0
+    for i in range(len(data)):
+        group = data[i]
+        for file in group:
+            file_id = file[0]
+            file_sz = file[1]
+            if file_id == None:
+                _pos += file_sz
+                continue
+            for block in range(file_sz):
+                prod = file_id * _pos
+                #print(prod,"=",file_id,"*",_pos)
+                _sum += prod
+                _pos += 1
+        if i & 1:
+            _pos += freelist[i>>1]
+    return _sum
+
+#===============================================================================
+def print_mmap(data,freelist):
+    for i in range(len(data)):
+        group = data[i]
+        for file in group:
+            if file[0] != None:
+                print(str(file[0]) * file[1], end='')
+            else:
+                print('.' * file[1], end='')
+        if i & 1:
+            print('.' * freelist[i>>1], end='')
+    print()
+
+#===============================================================================
+if __name__ == "__main__":
+    main()

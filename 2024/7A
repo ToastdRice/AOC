@@ -1,0 +1,85 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from sys import argv
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+    content = preprocess(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+def preprocess(filename):
+    """Extract lines from file"""
+    content = []
+    with open(filename,encoding="utf8") as file:
+        lines = file.read().split('\n')
+    for line in lines:
+        if line:
+            content.append(line)
+    return content
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    data = []
+    for line in content:
+        a, b = line.split(':')
+        b = b.strip().split()
+        a = int(a)
+        b = [int(x) for x in b]
+        data.append((a,b))
+    return data
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    _sum = 0
+    n = 0
+    for ans, vals in data:
+        n += 1
+        print (f"{n}/{len(data)}",end="\r")
+        for output in place_operators(vals):
+            if output == ans:
+                #print('\033[32m✓\033[0m')
+                _sum += ans
+                break
+            #else:
+                #print('\033[31m✗\033[0m')
+                #print()
+    return _sum
+
+#===============================================================================
+def place_operators(vals):
+    n = [0] * (len(vals) - 1)
+    for i in range(3**(len(vals)-1)):
+        res = vals[0]
+        #print(vals[0], end=' ')
+        for j in range(1,len(vals)):
+            x = n[j-1]
+            if x & 2:
+                res = int(f"{res}{vals[j]}")
+                #print('||',vals[j], end=' ')
+            elif x:
+                res *= vals[j]
+                #print('*',vals[j], end=' ')
+            else:
+                res += vals[j]
+                #print('+',vals[j], end=' ')
+        n[0] += 1
+        for j in range(len(vals)-2):
+            if n[j] == 3:
+                n[j] = 0
+                n[j+1] += 1
+        #print('=',res,end=' ')
+        yield res
+
+#===============================================================================
+if __name__ == "__main__":
+    main()

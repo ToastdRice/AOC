@@ -1,0 +1,94 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from sys import argv
+from math import prod
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+    content = preprocess(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+def preprocess(filename):
+    """Extract lines from file"""
+    with open(filename,encoding="utf8") as file:
+        return file.read()[:-1]
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    n = len(content)
+    blocks = [[] for i in range(n)] 
+    for i in range(n):
+        size = int(content[i])
+        blockID = None if (i & 1) else (i >> 1)
+        blocks[i].append([blockID, size])
+    return blocks
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    i = 1
+    j = len(data)-1
+    if not data[j][0][0]:
+        j -= 1
+    while i < j:
+        free = data[i][-1][1]
+        size = data[j][-1][1]
+        while size:
+            used = min(size,free)
+            size -= used
+            free -= used
+            data[i][-1][0] = data[j][0][0]
+            data[i][-1][1] = used
+            data[j][0][1] = size
+            if free:
+                data[i].append([None,free])
+            else:
+                i += 2
+                free = data[i][-1][1]
+                if i > j:
+                    break
+            #print_mmap(data)
+        if not size:
+            data[j][0][0] = None
+        j -= 2
+    return checksum(data)
+
+#===============================================================================
+def checksum(data):
+    _pos = 0
+    _sum = 0
+    for group in data:
+        for file in group:
+            file_id = file[0]
+            file_sz = file[1]
+            if file_id == None:
+                return _sum
+            for block in range(file_sz):
+                prod = file_id * _pos
+                #print(prod,"=",file_id,"*",_pos)
+                _sum += prod
+                _pos += 1
+    return _sum
+
+#===============================================================================
+def print_mmap(data):
+    for group in data:
+        for block in group:
+            if block[0] != None:
+                print(str(block[0]) * block[1], end='')
+            else:
+                print('.' * block[1], end='')
+    print()
+
+#===============================================================================
+if __name__ == "__main__":
+    main()
