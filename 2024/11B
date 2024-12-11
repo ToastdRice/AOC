@@ -1,0 +1,66 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from sys import argv
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+    content = preprocess(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+def preprocess(filename):
+    """Extract lines from file"""
+    with open(filename,encoding="utf8") as file:
+        return file.read()[:-1]
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    stones = {}
+    for stone in content.split():
+        value = int(stone)
+        stones[value] = stones.get(value,0) + 1
+    return stones
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    for i in range(75):
+        data = blink(data)
+    return sum(data.values())
+
+#===============================================================================
+def blink(stones):
+    new = {}
+    for value in stones:
+        count = stones[value]
+        if value == 0:
+            new[1] = new.get(1,0) + count
+        elif not split(new, value, count):
+            value *= 2024
+            new[value] = new.get(value,0) + count
+    return new
+
+#===============================================================================
+def split(dest, value, count):
+    value  = str(value)
+    digits = len(value)
+    if digits & 1:
+        return False
+    half = digits >> 1
+    a = int(value[half:])
+    b = int(value[:half])
+    dest[a] = dest.get(a,0) + count
+    dest[b] = dest.get(b,0) + count
+    return True
+
+#===============================================================================
+if __name__ == "__main__":
+    main()

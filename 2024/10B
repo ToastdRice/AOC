@@ -1,0 +1,101 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from sys import argv
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+    content = preprocess(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+def preprocess(filename):
+    """Extract lines from file"""
+    content = []
+    with open(filename,encoding="utf8") as file:
+        lines = file.read().split('\n')
+    for line in lines:
+        if line:
+            content.append(line)
+    return content
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    h,w = len(content),len(content[0])
+    trail_map  = []
+    trailheads = []
+    for y in range(h):
+        line = []
+        for x in range(w):
+            elevation = int(content[y][x])
+            trail = TrailNode(y,x,elevation)
+            line.append(trail)
+            if elevation == 0:
+                trailheads.append(trail)
+        trail_map.append(line)
+
+    return (trail_map, trailheads, (h,w))
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    trail_map  = data[0]
+    trailheads = data[1]
+    h,w        = data[2]
+    ym = h-1
+    xm = w-1
+    score = 0
+    rating = 0
+
+    for y in range(h):
+        for x in range(w):
+            trail = trail_map[y][x]
+            if x > 0:    trail.route(trail_map[y][x-1])
+            if x < xm:   trail.route(trail_map[y][x+1])
+            if y > 0:    trail.route(trail_map[y-1][x])
+            if y < ym:   trail.route(trail_map[y+1][x])
+
+    for start in trailheads:
+        #score += len(start.find_summits())
+        rating += start.get_rating()
+
+    return rating
+
+#===============================================================================
+class TrailNode():
+    def __init__(self, y, x, elevation):
+        self.y = y
+        self.x = x
+        self.elevation = elevation
+        self.paths = []
+    def route(self, node):
+        if node.elevation == self.elevation + 1:
+            self.paths.append(node)
+    def find_summits(self):
+        summits = set()
+        if self.elevation == 9:
+            summits.add(self)
+        else:
+            for trail in self.paths:
+                summits |= trail.find_summits()
+        return summits
+    def get_rating(self):
+        if self.elevation == 9:
+            return 1
+        rating = 0
+        for trail in self.paths:
+            rating += trail.get_rating()
+        return rating
+    def __str__(self):
+        return str((self.y,self.x,self.elevation))
+
+#===============================================================================
+if __name__ == "__main__":
+    main()

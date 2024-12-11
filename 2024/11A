@@ -1,0 +1,105 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from sys import argv
+from math import log10
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+    content = preprocess(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+def preprocess(filename):
+    """Extract lines from file"""
+    with open(filename,encoding="utf8") as file:
+        return file.read()[:-1]
+
+#===============================================================================
+class LinkedList():
+
+    class Node():
+        def __init__(self, value):
+            self.value = value
+            self.next  = None
+        def split(self):
+            value = str(self.value)
+            digits = len(value)
+            if digits % 2:
+                return False
+            save = self.next
+            half = digits >> 1
+            self.value = int(value[:half])
+            self.next = LinkedList.Node(int(value[half:]))
+            self.next.next = save
+            return True
+
+    class Iterator():
+        def __init__(self, node):
+            self.node = node
+        def __iter__(self):
+            return self
+        def __next__(self):
+            next = self.node
+            if next:
+                self.node = self.node.next
+                return next
+            raise StopIteration
+
+    def __init__(self, value):
+        head = LinkedList.Node(value)
+        self.head = head
+        self.tail = head
+        self.len  = 1
+
+    def __len__(self):
+        return self.len
+
+    def __iter__(self):
+        return LinkedList.Iterator(self.head)
+
+    def append(self, value):
+        node = LinkedList.Node(value)
+        self.tail.next = node
+        self.tail = node
+        self.len += 1
+
+    def print(self):
+        for node in self:
+            print(node.value, end=', ')
+        print()
+
+    def blink(self):
+        for node in self:
+            if node.value == 0:
+                node.value = 1
+            elif node.split():
+                self.len += 1
+            else:
+                node.value *= 2024
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    stones = content.split()
+    llist  = LinkedList(int(stones[0]))
+    for stone in stones[1:]:
+        llist.append(int(stone))
+    return llist
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    for i in range(25):
+        data.blink()
+    return len(data)
+
+#===============================================================================
+if __name__ == "__main__":
+    main()
