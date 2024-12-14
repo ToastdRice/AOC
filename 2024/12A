@@ -1,0 +1,92 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from sys import argv
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+    content = preprocess(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+def preprocess(filename):
+    """Extract lines from file"""
+    content = []
+    with open(filename,encoding="utf8") as file:
+        lines = file.read().split('\n')
+    for line in lines:
+        if line:
+            content.append(line)
+    return content
+
+#===============================================================================
+class Node():
+    #def __init__(self,value,y,x):
+        #self.p=(y,x)
+    def __init__(self,value):
+        self.n = []
+        self.value = value
+    def connect(self, neighbor):
+        if neighbor.value == self.value:
+            self.n.append(neighbor)
+            neighbor.n.append(self)
+    def visit(self, visited):
+        if self in visited:
+            return (0,0)
+        visited[self] = True
+        area   = 1
+        fences = 4 - len(self.n)
+        #print(self.p, fences, [(n.p) for n in self.n])
+        for neighbor in self.n:
+            na,nf = neighbor.visit(visited)
+            area   += na
+            fences += nf
+        return (area, fences)
+            
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    h,w = (len(content),len(content[0]))
+    graph = [Node(content[0][0])]
+    for x in range(1,w):
+        plot = content[0][x]
+        node = Node(plot)
+        node.connect(graph[-1])
+        graph.append(node)
+    for y in range(1,h):
+        plot = content[y][0]
+        node = Node(plot)
+        node.connect(graph[-w])
+        graph.append(node)
+        for x in range(1,w):
+            plot = content[y][x]
+            node = Node(plot)
+            node.connect(graph[-1])
+            node.connect(graph[-w])
+            graph.append(node)
+    return graph
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    cost = 0
+    visited = {}
+    for node in data:
+        if node in visited:
+            continue
+        na,nf = node.visit(visited)
+        price = na * nf
+        cost += price
+        #print(f"A region of {node.value} plants with price {na:3} * {nf:3} = {price}")
+    return cost
+
+#===============================================================================
+if __name__ == "__main__":
+    main()

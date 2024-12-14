@@ -1,0 +1,65 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from helper import *
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    arg_check()
+    content = read_line(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    return [ord(c)-ord('a') for c in content]
+
+#===============================================================================
+def process_data(pw):
+    """Process data as needed"""
+    starting(pw)
+    while not valid(pw):
+        print(''.join(chr(x+ord('a')) for x in pw),end='\r')
+        inc(pw)
+    return ''.join(chr(x+ord('a')) for x in pw)
+
+#===============================================================================
+invalid = {ord('i')-ord('a'), ord('o')-ord('a'), ord('l')-ord('a')}
+#===============================================================================
+def inc(pw,start=0):
+    for i in range(-1-start,-9,-1):
+        pw[i] += 1
+        if pw[i] in invalid:
+            pw[i] += 1
+        elif pw[i] > 25:
+            pw[i] = 0
+            continue
+        break
+
+#===============================================================================
+check = list(range(2,8))
+def valid(pw):
+    pairs = (pw[0] == pw[1])
+    ppos  = pairs + 1
+    straight = False
+    for i in check:
+        if pw[i-2] + 2 == pw[i-1] + 1 == pw[i]:
+            straight = True
+        elif pw[i] == pw[i-1] and i != ppos:
+            pairs += 1
+            ppos = i+1
+    return straight and pairs > 1
+
+#===============================================================================
+def starting(pw):
+    inc(pw)
+    for i in range(8):
+        if pw[i] in invalid:
+            inc(pw,i)
+
+#===============================================================================
+if __name__ == "__main__":
+    main()

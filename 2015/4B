@@ -1,0 +1,28 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from helper import *
+from hashlib import md5
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    arg_check()
+    data = read_arg()
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    i = 0
+    digest = md5(bytes(data+str(0),'ascii')).hexdigest()
+    while digest[:6] != "000000":
+        i += 1
+        digest = md5(bytes(data+str(i),'ascii')).hexdigest()
+
+    return i
+
+#===============================================================================
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,142 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from helper import *
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    arg_check()
+    content = read_lines(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+class Wire():
+    def __init__(self, component = None):
+        self.driver = component
+        self.reset()
+    def reset(self):
+        self.value = None
+    def connect(self, component):
+        self.driver = component
+    def get_value(self):
+        if self.value == None:
+            if isinstance(self.driver, Wire)\
+            or isinstance(self.driver, Gate):
+                  self.value = self.driver.get_value()
+            else: self.value = self.driver
+        return self.value
+
+#===============================================================================
+class Gate():
+
+    def __init__(self,op,size,a,b=None):
+        self.a = a
+        self.b = b
+        self.mask = (1 << size) - 1
+        self.inputs = 1
+        self.reset()
+        if op == "NOT":
+            self.op = self._not
+            return
+        elif b == None:
+            raise Exception(f"{op} gate requires two operands!")
+        else:
+            self.inputs = 2
+        if   op == "OR":     self.op = self._or
+        elif op == "AND":    self.op = self._and
+        elif op == "LSHIFT": self.op = self._lshift
+        elif op == "RSHIFT": self.op = self._rshift
+
+    def reset(self):
+        self.value = None
+
+    def get_value(self):
+        if self.value == None:
+            if self.inputs == 1:
+                value =  self.op(self.a.get_value())
+            else:
+                value = self.op(self.a.get_value(), self.b.get_value())
+            self.value = value & self.mask
+        return self.value
+
+    def _not   (self, a):    return ~a
+    def _and   (self, a, b): return a & b
+    def _or    (self, a, b): return a | b
+    def _lshift(self, a, b): return a << b
+    def _rshift(self, a, b): return a >> b
+
+#===============================================================================
+class Circuit():
+    def __init__(self, bus_width):
+        self.wires = {}
+        self.gates = []
+        self.width = bus_width
+        self.mask = (1 << bus_width) - 1
+        self.probed = False
+
+    def __get_wire(self, label):
+        if label not in self.wires:
+            try:
+                return Wire(int(label) & self.mask)
+            except ValueError:
+                self.wires[label] = Wire()
+        return self.wires[label]
+
+    def add(self, diagram):
+        if len(diagram) == 3:
+            component = self.__get_wire(diagram[0])
+        elif len(diagram) == 4:
+            wire1 = self.__get_wire(diagram[1])
+            component = Gate(diagram[0], self.width, wire1)
+            self.gates.append(component)
+        else:
+            wire1 = self.__get_wire(diagram[0])
+            wire2 = self.__get_wire(diagram[2])
+            component = Gate(diagram[1], self.width, wire1, wire2)
+            self.gates.append(component)
+        self.connect(diagram[-1], component)
+
+    def connect(self, label, component):
+        if self.probed:
+            self.probed = False
+            self.reset()
+        out_wire = self.__get_wire(label)
+        out_wire.connect(component)
+
+    def show_values(self):
+        for label in sorted(self.wires):
+            print(f"{label}:",self.wires[label].get_value())
+
+    def probe(self, label):
+        self.probed = True
+        return self.__get_wire(label).get_value()
+
+    def reset(self):
+        for wire in self.wires.values():
+            wire.reset()
+        for gate in self.gates:
+            gate.reset()
+            
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    return [line.split() for line in content]
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    circuit = Circuit(16)
+    for connection in data:
+        circuit.add(connection)
+    signal = circuit.probe('a')
+    override = Wire(signal)
+    circuit.connect('b', override)
+    return circuit.probe('a')
+
+#===============================================================================
+if __name__ == "__main__":
+    main()

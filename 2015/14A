@@ -1,0 +1,75 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from helper import *
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    arg_check()
+    content = read_lines(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+class Reindeer:
+    furthest = 0
+
+    def __init__(self, name, speed, fly_time, rest_time):
+        self.flying   = True
+        self.score    = 0
+        self.distance = 0
+        self.duration = 0
+        self.speed    = speed
+        self.dt_fly   = fly_time
+        self.dt_rest  = rest_time
+        self.name     = name
+    
+    def simulate(self):
+        self.duration += 1
+        if self.flying:
+            self.distance += self.speed
+            if self.duration >= self.dt_fly:
+                self.duration = 0
+                self.flying = False
+        elif self.duration >= self.dt_rest:
+            self.duration = 0
+            self.flying = True
+        if Reindeer.furthest < self.distance:
+            Reindeer.furthest = self.distance
+
+    def update_score(self):
+        if Reindeer.furthest == self.distance:
+            self.score += 1
+
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    reindeer = []
+    for line in content:
+        line = line.split()
+        name = line[0]
+        speed = int(line[3])
+        fly = int(line[6])
+        rest = int(line[-2])
+        reindeer.append(Reindeer(name, speed, fly, rest))
+    return reindeer
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    time_limit = 2503
+
+    for second in range(time_limit):
+        for deer in data:
+            deer.simulate()
+        for deer in data:
+            deer.update_score()
+
+    return max(deer.duration for deer in data)
+
+#===============================================================================
+if __name__ == "__main__":
+    main()

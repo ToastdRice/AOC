@@ -1,0 +1,43 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from helper import *
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    arg_check()
+    data = read_lines(argv[1])
+    result = process_data(data)
+    print(result)
+
+bad = {'a':'b', 'c':'d', 'p':'q', 'x':'y'}
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    nice = 0
+    for line in data:
+        prev = line[0]
+        vowels = {'a':0,'e':0,'i':0,'o':0,'u':0}
+        naughty = False
+        twice   = False
+        if prev in vowels:
+            vowels[prev] = 1
+        for char in line[1:]:
+            if prev == char:
+                twice = True
+            elif prev in bad and char == bad[prev]:
+                naughty = True
+                break
+            if char in vowels:
+                vowels[char] += 1
+            prev = char
+        if twice and not naughty:
+            if sum(vowels.values()) >  2:
+                nice += 1
+    return nice
+
+#===============================================================================
+if __name__ == "__main__":
+    main()

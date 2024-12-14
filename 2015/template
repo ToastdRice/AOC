@@ -1,0 +1,40 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from sys import argv
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+    content = preprocess(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+def preprocess(filename):
+    """Extract lines from file"""
+    content = []
+    with open(filename,encoding="utf8") as file:
+        lines = file.read().split('\n')
+    for line in lines:
+        if line:
+            content.append(line)
+    return content
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    return content
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    return data
+
+#===============================================================================
+if __name__ == "__main__":
+    main()

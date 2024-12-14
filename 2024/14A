@@ -1,0 +1,64 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from helper import *
+from math import prod
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    arg_check()
+    content = read_lines(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+class Robot():
+    def __init__(self, pos, vel):
+        self.x  = int(pos[0])
+        self.y  = int(pos[1])
+        self.dx = int(vel[0])
+        self.dy = int(vel[1])
+    def move(self,time,w,h):
+        self.x += self.dx * time
+        self.x %= w
+        self.y += self.dy * time
+        self.y %= h
+    def quadrant(self,xm,ym):
+        if self.x == xm or self.y == ym:
+            return None
+        horz = self.x > xm
+        vert = self.y > ym
+        quad = (horz) | (vert << 1)
+        #print(quad,(self.x,self.y),(xm,ym))
+        return quad
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    robots = []
+    for line in content:
+        pos, vel = line.split()
+        pos = pos[2:].split(',')
+        vel = vel[2:].split(',')
+        robots.append(Robot(pos,vel))
+    return robots
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    w,h,t = 101,103,100
+    xm = w >> 1
+    ym = h >> 1
+    count = {0:0, 1:0, 2:0, 3:0}
+    for robot in data:
+        robot.move(t,w,h)
+        quad = robot.quadrant(xm,ym)
+        if quad is not None:
+            count[quad] += 1
+    return prod(count.values())
+
+#===============================================================================
+if __name__ == "__main__":
+    main()

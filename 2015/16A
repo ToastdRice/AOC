@@ -1,0 +1,59 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from helper import *
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    arg_check()
+    content = read_lines(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    aunts = []
+    for line in content:
+        i = 0
+        while line[i] != ':': i += 1
+        #aunt = {'akitas': 1, 'vizslas': 1}
+        aunt = {}
+        details = line[i+2:].split(',')
+        for detail in details:
+            item, amt = detail.split(':')
+            aunt[item.strip()] = int(amt)
+        aunts.append(aunt)
+    return aunts
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    forensics = {
+            "children": 3,
+            "cats": 7,
+            "samoyeds": 2,
+            "pomeranians": 3,
+            "akitas": 0,
+            "vizslas": 0,
+            "goldfish": 5,
+            "trees": 3,
+            "cars": 2,
+            "perfumes": 1,
+    }
+    for i in range(len(data)):
+        aunt = data[i]
+        match = True
+        for detail in aunt:
+            if aunt[detail] != forensics[detail]:
+                match = False
+                break
+        if match:
+            return i + 1
+    return 0
+
+#===============================================================================
+if __name__ == "__main__":
+    main()

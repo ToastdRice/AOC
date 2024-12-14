@@ -1,0 +1,53 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from helper import *
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    arg_check()
+    content = read_lines(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    data = []
+    for line in content:
+        instructions = line.split()[-4:]
+        action = instructions[0]
+        if   action == "on":  action = 1
+        elif action == "off": action = 0
+        else:                 action = 2
+        start = [int(x)   for x in instructions[1].split(',')]
+        stop  = [int(x)+1 for x in instructions[3].split(',')]
+        data.append((action,start,stop))
+    return data
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    lights = [[0 for x in range(1000)] for y in range(1000)]
+    for action, start, stop in data:
+        x1,y1 = start
+        x2,y2 = stop
+        if action == 0:
+            for y in range(y1,y2):
+                for x in range(x1,x2):
+                    lights[y][x] = 0
+        elif action == 1:
+            for y in range(y1,y2):
+                for x in range(x1,x2):
+                    lights[y][x] = 1
+        else:
+            for y in range(y1,y2):
+                for x in range(x1,x2):
+                    lights[y][x] ^= 1
+    return sum(sum(row) for row in lights)
+
+#===============================================================================
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,34 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from helper import *
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    arg_check()
+    data = read_line(argv[1])
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    prev = data
+    for i in range(50):
+        next = ""
+        d = prev[0]
+        n = 1
+        for c in prev[1:]:
+            if d != c:
+                next += str(n) + d
+                d = c
+                n = 1
+            else:
+                n += 1
+        prev = next + str(n) + d
+    return len(prev)
+
+#===============================================================================
+if __name__ == "__main__":
+    main()

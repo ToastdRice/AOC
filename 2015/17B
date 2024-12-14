@@ -1,0 +1,52 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from helper import *
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    arg_check()
+    content = read_lines(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    return [int(x) for x in content]
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    acc = dict()
+    count_combinations(data, 150, acc)
+    return acc[min(acc)]
+
+#===============================================================================
+def count_combinations(containers, capacity, acc, combo=[]):
+    if not containers:
+        return 0
+    amount = containers[0]
+    containers = containers[1:]
+    count = count_combinations(containers, capacity, acc, combo)
+    capacity -= amount
+    combo = combo + [amount]
+    if capacity > 0:
+        count += count_combinations(containers, capacity, acc, combo)
+    elif capacity == 0:
+        count += 1
+        n = len(combo)
+        if n in acc:
+            acc[n] += 1
+        else:
+            acc[n] = 1
+    return count
+
+
+
+
+#===============================================================================
+if __name__ == "__main__":
+    main()

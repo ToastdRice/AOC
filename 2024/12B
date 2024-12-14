@@ -1,0 +1,131 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from sys import argv
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    if len(argv) != 2:
+        print("Invalid # of arguments")
+        return
+    content = preprocess(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+def preprocess(filename):
+    """Extract lines from file"""
+    content = []
+    with open(filename,encoding="utf8") as file:
+        lines = file.read().split('\n')
+    for line in lines:
+        if line:
+            content.append(line)
+    return content
+
+#===============================================================================
+class Node():
+
+    def __init__(self,value,y,x):
+        self.y = y
+        self.x = x
+        self.n = []
+        self.fence = [1,1,1,1]
+        self.value = value
+
+    def connect(self, neighbor):
+        if neighbor.value == self.value:
+            self.remove_fence(neighbor)
+            self.n.append(neighbor)
+            neighbor.n.append(self)
+
+    def remove_fence(self, neighbor):
+        if self.y > neighbor.y:
+            self.fence[0] = 0
+            neighbor.fence[2] = 0
+        elif self.y < neighbor.y:
+            self.fence[2] = 0
+            neighbor.fence[0] = 0
+        elif self.x < neighbor.x:
+            self.fence[1] = 0
+            neighbor.fence[3] = 0
+        else:
+            self.fence[3] = 0
+            neighbor.fence[1] = 0
+
+    def share_fence(self, neighbor):
+        if self.value != neighbor.value:
+            return
+        for i in range(4):
+            if self.fence[i] and neighbor.fence[i]:
+                self.fence[i] = 0
+
+    def visit(self, visited):
+        if self in visited:
+            return (0,0)
+        visited[self] = True
+        area  = 0
+        sides = 0
+        for neighbor in self.n:
+            na,nf = neighbor.visit(visited)
+            area  += na
+            sides += nf
+        area  += 1
+        sides += sum(self.fence)
+        return (area, sides)
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    h,w = (len(content),len(content[0]))
+    plot = content[0][0]
+    node = Node(plot,0,0)
+    graph = [node]
+    for x in range(1,w):
+        plot = content[0][x]
+        node = Node(plot,0,x)
+        node.connect(graph[-1])
+        graph.append(node)
+    for y in range(1,h):
+        plot = content[y][0]
+        node = Node(plot,y,0)
+        node.connect(graph[-w])
+        graph.append(node)
+        for x in range(1,w):
+            plot = content[y][x]
+            node = Node(plot,y,x)
+            node.connect(graph[-1])
+            node.connect(graph[-w])
+            graph.append(node)
+    i = 0
+    for y in range(1,h):
+        for x in range(1,w):
+            graph[i].share_fence(graph[i+1])
+            graph[i].share_fence(graph[i+w])
+            i += 1
+        graph[i].share_fence(graph[i+w])
+        i += 1
+    for x in range(1,w):
+        graph[i].share_fence(graph[i+1])
+        i += 1
+    return graph
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    cost = 0
+    visited = {}
+    for node in data:
+        if node in visited:
+            continue
+        na,nf = node.visit(visited)
+        price = na * nf
+        cost += price
+        #print(f"A region of {node.value} plants with price {na:3} * {nf:3} = {price}")
+    return cost
+
+#===============================================================================
+if __name__ == "__main__":
+    main()

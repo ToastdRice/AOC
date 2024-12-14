@@ -1,0 +1,39 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from helper import *
+from json import loads
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    arg_check()
+    content = read_line(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    return loads(content)
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    sum = 0
+    if isinstance(data, list):
+        for item in data:
+            sum += process_data(item)
+    elif isinstance(data, dict):
+        for key in data:
+            if key == "red" or data[key] == "red":
+                return 0
+            sum += process_data(data[key])
+    elif isinstance(data, int):
+        return data
+    return sum
+
+#===============================================================================
+if __name__ == "__main__":
+    main()

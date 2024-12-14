@@ -1,0 +1,44 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from helper import *
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    arg_check()
+    content = read_line(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    return content
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    i = 0
+    j = 0
+    n = len(data)
+    digits = '0123456789'
+    ints = '-' + digits
+    sum = 0
+    while i < n:
+        if data[i] in ints:
+            j = i
+            i += 1
+            while i < n and data[i] in digits:
+                i += 1
+            try:
+                sum += int(data[j:i])
+            except ValueError:
+                pass
+        i += 1
+    return sum
+
+#===============================================================================
+if __name__ == "__main__":
+    main()

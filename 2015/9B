@@ -1,0 +1,67 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from helper import *
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    arg_check()
+    content = read_lines(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+class Node:
+    def __init__(self):
+        self.hop = {}
+    def add(self, node, distance):
+        self.hop[node] = distance
+    def dfs(self, visited=set()):
+        visited = visited | {self}
+        outlook = filter(lambda node: node not in visited, self.hop)
+        try:
+            node = next(outlook)
+            longest = self.hop[node] + node.dfs(visited)
+        except StopIteration:
+            return 0
+        for node in outlook:
+            distance = self.hop[node] + node.dfs(visited)
+            if longest < distance:
+                longest = distance
+        return longest
+
+        
+
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    network = {}
+    for line in content:
+        a,_,b,_,d = line.split()
+        d = int(d)
+        if a not in network:
+            network[a] = Node()
+        if b not in network:
+            network[b] = Node()
+        a = network[a]
+        b = network[b]
+        a.add(b,d)
+        b.add(a,d)
+    return network
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    longest = 0
+    for node in data:
+        distance = data[node].dfs()
+        if longest < distance:
+            longest = distance
+    return longest
+
+#===============================================================================
+if __name__ == "__main__":
+    main()
