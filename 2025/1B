@@ -1,0 +1,49 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from helper import *
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    arg_check()
+    content = read_lines(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    data = []
+    for line in content:
+        distance = int(line[1:])
+        if line[0] == "L":
+            distance = -distance
+        data.append(distance)
+    return data
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    dial = 50
+    count = 0
+    for rotation in data:
+        forecast = dial + rotation
+        count   += abs(forecast // 100)
+        if forecast <= 0: # Edge cases
+            count += int(0 == forecast % 100)
+            count -= int(0 == dial)
+        # print(f"[{count:4}] {dial:4} + {rotation:4} = {forecast:4}")
+        dial = forecast % 100
+    return count
+
+#===============================================================================
+if __name__ == "__main__":
+    main()
+
+#--------------
+# Past Answers
+# 5984 (TOO HIGH)
+# 5874 (TOO LOW)
+# 5978

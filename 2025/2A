@@ -1,0 +1,58 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from helper import *
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    arg_check()
+    content = read_line(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    data = []
+    for item in content.split(','):
+        first, last = item.split('-')
+        data.append((first,last))
+    return data
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    sum = 0
+    for item in data:
+        first, last = item
+        # print(f"{first}..{last}:", end=' ')
+        start = int(first)
+        end   = int(last )
+        len1  = len(first)
+        len2  = len(last )
+        if len1 % 2 == 1:
+            start = 10 ** len1
+            first = str(start)
+            len1 += 1
+        half = int(first[:len1//2])
+        invalid = int(f"{half}{half}")
+        if invalid < start:
+            half += 1
+            invalid = int(f"{half}{half}")
+        while invalid <= end:
+            # print(invalid, end=", ")
+            sum  += invalid
+            half += 1
+            invalid = int(f"{half}{half}")
+        # print("\n")
+
+    return sum
+
+#===============================================================================
+if __name__ == "__main__":
+    main()
+
+# Past Answers
+# 18880158752 (TOO LOW)
