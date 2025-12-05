@@ -1,0 +1,84 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from helper import *
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    arg_check()
+    content = read_line(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    data = []
+    for item in content.split(','):
+        first, last = item.split('-')
+        data.append((first,last))
+    return data
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    accumulator = 0
+    for item in data:
+        first, last = item
+        length = len(first)
+        start  = int(first)
+        end    = int(last) +  1
+        to     = len(last) // 2
+        seen   = set()
+
+        for width in range(1,to+1):
+            div    = (length + width - 1) // width
+            digits = length + (-length % div)
+            start2 = max(start, 10 ** (digits - 1))
+            it     = invalid_iter(start2, end, width, div)
+
+            #print(first, last, digits, width)
+
+            for invalid in it:
+                seen.add(invalid)
+
+        accumulator += sum(seen)
+        print(f"\n> {start} to {end}\n{sorted(list(seen))}\n")
+
+    return accumulator
+
+
+
+#===============================================================================
+def next_invalid(first, width, div):
+    pattern = first[:width]
+    while True:
+        invalid = int(pattern * div)
+        yield invalid
+        pattern = str(int(pattern)+1)
+        if len(pattern) > width:
+            pattern = pattern[:width]
+            div += 1
+
+#===============================================================================
+def invalid_iter(start, end, width, div):
+    if width == div == 1:
+        div += 1
+    first = str(start)
+    it    = next_invalid(first, width, div)
+    out   = next(it)
+    if out < start:
+        out = next(it)
+    while out <= end:
+        yield out
+        out = next(it)
+    
+
+#===============================================================================
+if __name__ == "__main__":
+    main()
+
+# Past Answers
+# 38262920280 (TOO HIGH)

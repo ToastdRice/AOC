@@ -1,0 +1,50 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from helper import *
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    arg_check()
+    content = read_sections(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    fresh = []
+    for line in content[0]:
+        line = line.split('-')
+        fresh.append([int(line[0]), int(line[1])])
+    return fresh
+
+#===============================================================================
+def process_data(overlapping):
+    """Process data as needed"""
+    overlapping.sort(reverse=True)
+    fresh = [overlapping.pop()]
+    while overlapping:
+        a = overlapping.pop()
+        b = fresh[-1]
+        if a[0] <= b[1]:
+            b[1] = max(a[1],b[1])
+        else:
+            fresh.append(a)
+    
+    print(fresh)
+
+    count = 0
+    for a,b in fresh:
+        count += b - a + 1
+
+    return count
+
+#===============================================================================
+if __name__ == "__main__":
+    main()
+
+# Past Answers
+# 344596603845719 (WRONG)

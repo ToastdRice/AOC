@@ -1,0 +1,39 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from helper import *
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    arg_check()
+    content = read_lines(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    data = []
+    for line in content:
+        distance = int(line[1:])
+        if line[0] == "L":
+            distance = -distance
+        data.append(distance)
+    return data
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    sum = 50
+    count = 0;
+    for line in data:
+        sum += line
+        sum %= 100
+        count += (sum == 0)
+    return count
+
+#===============================================================================
+if __name__ == "__main__":
+    main()

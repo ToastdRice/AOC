@@ -1,0 +1,116 @@
+❯ nmap -p- -sV -vv target       
+Starting Nmap 7.98 ( https://nmap.org ) at 2025-12-04 04:37 -0700
+NSE: Loaded 48 scripts for scanning.
+Initiating Ping Scan at 04:37
+Scanning target (10.66.180.90) [2 ports]
+Completed Ping Scan at 04:37, 0.07s elapsed (1 total hosts)
+Initiating Connect Scan at 04:37
+Scanning target (10.66.180.90) [65535 ports]
+Discovered open port 22/tcp on 10.66.180.90
+Discovered open port 80/tcp on 10.66.180.90
+Discovered open port 8080/tcp on 10.66.180.90
+Discovered open port 13404/tcp on 10.66.180.90
+Discovered open port 8000/tcp on 10.66.180.90
+Discovered open port 13403/tcp on 10.66.180.90
+Increasing send delay for 10.66.180.90 from 0 to 5 due to max_successful_tryno increase to 4
+Discovered open port 21337/tcp on 10.66.180.90
+Discovered open port 13401/tcp on 10.66.180.90
+Discovered open port 13400/tcp on 10.66.180.90
+Discovered open port 13402/tcp on 10.66.180.90
+Increasing send delay for 10.66.180.90 from 5 to 10 due to max_successful_tryno increase to 5
+Increasing send delay for 10.66.180.90 from 10 to 20 due to max_successful_tryno increase to 6
+Completed Connect Scan at 04:41, 226.22s elapsed (65535 total ports)
+Initiating Service scan at 04:41
+Scanning 10 services on target (10.66.180.90)
+Completed Service scan at 04:43, 118.79s elapsed (10 services on 1 host)
+NSE: Script scanning 10.66.180.90.
+NSE: Starting runlevel 1 (of 2) scan.
+Initiating NSE at 04:43
+Completed NSE at 04:43, 0.54s elapsed
+NSE: Starting runlevel 2 (of 2) scan.
+Initiating NSE at 04:43
+Completed NSE at 04:43, 1.07s elapsed
+Nmap scan report for target (10.66.180.90)
+Host is up, received conn-refused (0.17s latency).
+Scanned at 2025-12-04 04:37:15 MST for 347s
+Not shown: 65524 closed tcp ports (conn-refused)
+PORT      STATE    SERVICE    REASON      VERSION
+22/tcp    open     ssh        syn-ack     OpenSSH 9.6p1 Ubuntu 3ubuntu13.11 (Ubuntu Linux; protocol 2.0)
+80/tcp    open     http       syn-ack     nginx 1.24.0 (Ubuntu)
+8000/tcp  open     http-alt   syn-ack
+8080/tcp  open     http       syn-ack     SimpleHTTPServer 0.6 (Python 3.12.3)
+9001/tcp  filtered tor-orport no-response
+13400/tcp open     http       syn-ack     nginx 1.24.0 (Ubuntu)
+13401/tcp open     http       syn-ack     Werkzeug httpd 3.1.3 (Python 3.12.3)
+13402/tcp open     http       syn-ack     nginx 1.24.0 (Ubuntu)
+13403/tcp open     unknown    syn-ack
+13404/tcp open     unknown    syn-ack
+21337/tcp open     http       syn-ack     Werkzeug httpd 3.0.1 (Python 3.12.3)
+3 services unrecognized despite returning data. If you know the service/version, please submit the following fingerprints at https://nmap.org/cgi-bin/submit.cgi?new-service :
+==============NEXT SERVICE FINGERPRINT (SUBMIT INDIVIDUALLY)==============
+SF-Port8000-TCP:V=7.98%I=7%D=12/4%Time=69317354%P=x86_64-pc-linux-gnu%r(Ge
+SF:nericLines,1C,"HTTP/1\.1\x20400\x20Bad\x20Request\r\n\r\n")%r(GetReques
+SF:t,C9,"HTTP/1\.0\x20302\x20Found\r\nContent-Type:\x20text/html;\x20chars
+SF:et=utf-8\r\nLocation:\x20/posts/\r\nX-Frame-Options:\x20DENY\r\nContent
+SF:-Length:\x200\r\nVary:\x20Accept-Language\r\nContent-Language:\x20en\r\
+SF:nX-Content-Type-Options:\x20nosniff\r\n\r\n")%r(FourOhFourRequest,160,"
+SF:HTTP/1\.0\x20404\x20Not\x20Found\r\nContent-Type:\x20text/html\r\nX-Fra
+SF:me-Options:\x20DENY\r\nContent-Length:\x20179\r\nVary:\x20Accept-Langua
+SF:ge\r\nContent-Language:\x20en\r\nX-Content-Type-Options:\x20nosniff\r\n
+SF:\r\n\n<!doctype\x20html>\n<html\x20lang=\"en\">\n<head>\n\x20\x20<title
+SF:>Not\x20Found</title>\n</head>\n<body>\n\x20\x20<h1>Not\x20Found</h1><p
+SF:>The\x20requested\x20resource\x20was\x20not\x20found\x20on\x20this\x20s
+SF:erver\.</p>\n</body>\n</html>\n")%r(Socks5,1C,"HTTP/1\.1\x20400\x20Bad\
+SF:x20Request\r\n\r\n")%r(HTTPOptions,C9,"HTTP/1\.0\x20302\x20Found\r\nCon
+SF:tent-Type:\x20text/html;\x20charset=utf-8\r\nLocation:\x20/posts/\r\nX-
+SF:Frame-Options:\x20DENY\r\nContent-Length:\x200\r\nVary:\x20Accept-Langu
+SF:age\r\nContent-Language:\x20en\r\nX-Content-Type-Options:\x20nosniff\r\
+SF:n\r\n")%r(RTSPRequest,1C,"HTTP/1\.1\x20400\x20Bad\x20Request\r\n\r\n")%
+SF:r(Help,1C,"HTTP/1\.1\x20400\x20Bad\x20Request\r\n\r\n")%r(TerminalServe
+SF:rCookie,1C,"HTTP/1\.1\x20400\x20Bad\x20Request\r\n\r\n")%r(SIPOptions,1
+SF:C,"HTTP/1\.1\x20400\x20Bad\x20Request\r\n\r\n");
+==============NEXT SERVICE FINGERPRINT (SUBMIT INDIVIDUALLY)==============
+SF-Port13403-TCP:V=7.98%I=7%D=12/4%Time=69317359%P=x86_64-pc-linux-gnu%r(G
+SF:etRequest,52,"HTTP/1\.1\x20404\x20Not\x20Found\r\nDate:\x20Thu,\x2004\x
+SF:20Dec\x202025\x2011:41:12\x20GMT\r\nConnection:\x20close\r\n\r\n")%r(HT
+SF:TPOptions,52,"HTTP/1\.1\x20404\x20Not\x20Found\r\nDate:\x20Thu,\x2004\x
+SF:20Dec\x202025\x2011:41:12\x20GMT\r\nConnection:\x20close\r\n\r\n")%r(RT
+SF:SPRequest,52,"HTTP/1\.1\x20404\x20Not\x20Found\r\nDate:\x20Thu,\x2004\x
+SF:20Dec\x202025\x2011:41:13\x20GMT\r\nConnection:\x20close\r\n\r\n")%r(RP
+SF:CCheck,2F,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nConnection:\x20close\r
+SF:\n\r\n")%r(DNSVersionBindReqTCP,2F,"HTTP/1\.1\x20400\x20Bad\x20Request\
+SF:r\nConnection:\x20close\r\n\r\n")%r(DNSStatusRequestTCP,2F,"HTTP/1\.1\x
+SF:20400\x20Bad\x20Request\r\nConnection:\x20close\r\n\r\n")%r(Help,2F,"HT
+SF:TP/1\.1\x20400\x20Bad\x20Request\r\nConnection:\x20close\r\n\r\n")%r(SS
+SF:LSessionReq,2F,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nConnection:\x20cl
+SF:ose\r\n\r\n")%r(TerminalServerCookie,2F,"HTTP/1\.1\x20400\x20Bad\x20Req
+SF:uest\r\nConnection:\x20close\r\n\r\n")%r(TLSSessionReq,2F,"HTTP/1\.1\x2
+SF:0400\x20Bad\x20Request\r\nConnection:\x20close\r\n\r\n")%r(Kerberos,2F,
+SF:"HTTP/1\.1\x20400\x20Bad\x20Request\r\nConnection:\x20close\r\n\r\n")%r
+SF:(SMBProgNeg,2F,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nConnection:\x20cl
+SF:ose\r\n\r\n")%r(X11Probe,2F,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nConn
+SF:ection:\x20close\r\n\r\n")%r(FourOhFourRequest,52,"HTTP/1\.1\x20404\x20
+SF:Not\x20Found\r\nDate:\x20Thu,\x2004\x20Dec\x202025\x2011:41:14\x20GMT\r
+SF:\nConnection:\x20close\r\n\r\n")%r(LPDString,2F,"HTTP/1\.1\x20400\x20Ba
+SF:d\x20Request\r\nConnection:\x20close\r\n\r\n")%r(LDAPSearchReq,2F,"HTTP
+SF:/1\.1\x20400\x20Bad\x20Request\r\nConnection:\x20close\r\n\r\n")%r(LDAP
+SF:BindReq,2F,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nConnection:\x20close\
+SF:r\n\r\n")%r(SIPOptions,2F,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nConnec
+SF:tion:\x20close\r\n\r\n")%r(LANDesk-RC,2F,"HTTP/1\.1\x20400\x20Bad\x20Re
+SF:quest\r\nConnection:\x20close\r\n\r\n")%r(TerminalServer,2F,"HTTP/1\.1\
+SF:x20400\x20Bad\x20Request\r\nConnection:\x20close\r\n\r\n")%r(NCP,2F,"HT
+SF:TP/1\.1\x20400\x20Bad\x20Request\r\nConnection:\x20close\r\n\r\n");
+==============NEXT SERVICE FINGERPRINT (SUBMIT INDIVIDUALLY)==============
+SF-Port13404-TCP:V=7.98%I=7%D=12/4%Time=69317354%P=x86_64-pc-linux-gnu%r(G
+SF:enericLines,D,"unauthorized\n")%r(GetRequest,D,"unauthorized\n")%r(HTTP
+SF:Options,D,"unauthorized\n")%r(RTSPRequest,D,"unauthorized\n")%r(Help,D,
+SF:"unauthorized\n")%r(SSLSessionReq,D,"unauthorized\n")%r(TerminalServerC
+SF:ookie,D,"unauthorized\n")%r(TLSSessionReq,D,"unauthorized\n")%r(Kerbero
+SF:s,D,"unauthorized\n")%r(FourOhFourRequest,D,"unauthorized\n")%r(LPDStri
+SF:ng,D,"unauthorized\n")%r(LDAPSearchReq,D,"unauthorized\n")%r(SIPOptions
+SF:,D,"unauthorized\n");
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Read data files from: /usr/bin/../share/nmap
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 346.83 seconds
