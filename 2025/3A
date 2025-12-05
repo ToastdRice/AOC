@@ -1,0 +1,52 @@
+#!/usr/bin/python
+"""Advent of Code Solution"""
+
+from helper import *
+
+#===============================================================================
+def main():
+    """Runs if script is being run as executable"""
+    arg_check()
+    content = read_lines(argv[1])
+    data = process_lines(content)
+    result = process_data(data)
+    print(result)
+
+#===============================================================================
+def process_lines(content):
+    """Parse lines into useable data"""
+    banks = []
+    for line in content:
+        bank = [int(char) for char in line]
+        banks.append(bank)
+    return banks
+
+#===============================================================================
+def process_data(data):
+    """Process data as needed"""
+    result = 0
+    for bank in data:
+        largest = bank[0]
+        position = 0
+        for i in range(1,len(bank)):
+            if largest < bank[i]:
+                largest = bank[i]
+                position = i
+        candidate1 = 0
+        for battery in bank[:position]:
+            jolts = 10 * battery + largest
+            if candidate1 < jolts:
+                candidate1 = jolts
+        largest *= 10
+        candidate2 = 0
+        for battery in bank[position+1:]:
+            jolts = largest + battery
+            if candidate2 < jolts:
+                candidate2 = jolts
+        jolts = max(candidate1, candidate2)
+        result += jolts
+    return result
+
+#===============================================================================
+if __name__ == "__main__":
+    main()
